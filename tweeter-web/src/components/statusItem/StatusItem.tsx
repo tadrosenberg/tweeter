@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { AuthToken, FakeData, User } from "tweeter-shared";
+import { AuthToken, FakeData, Status, User } from "tweeter-shared";
 import Post from "./Post";
 import useToastListener from "../toaster/ToastListenerHook";
 import { useContext } from "react";
@@ -7,8 +7,7 @@ import { UserInfoContext } from "../userInfo/UserInfoProvider";
 
 interface Props {
     user: User;
-    formattedDate: string;
-    status: any;
+    status: Status;
 }
 
 const statusItem = (props: Props) => {
@@ -76,7 +75,7 @@ const statusItem = (props: Props) => {
                     {props.user.alias}
                 </Link>
                 </h2>
-                {props.formattedDate}
+                {props.status.formattedDate}
                 <br />
                 <Post status={props.status} />
             </div>

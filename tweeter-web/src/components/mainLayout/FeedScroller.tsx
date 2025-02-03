@@ -3,8 +3,6 @@ import { UserInfoContext } from "../userInfo/UserInfoProvider";
 import { AuthToken, FakeData, Status, User } from "tweeter-shared";
 import { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Link } from "react-router-dom";
-import Post from "../statusItem/Post";
 import useToastListener from "../toaster/ToastListenerHook";
 import StatusItem from "../statusItem/StatusItem";
 
@@ -95,7 +93,7 @@ const FeedScroller = () => {
             key={index}
             className="row mb-3 mx-0 px-0 border rounded bg-white"
           >
-            <StatusItem user={item.user} formattedDate={item.formattedDate} status={item}/>
+            <StatusItem user={item.user} status={item}/>
           </div>
         ))}
       </InfiniteScroll>
