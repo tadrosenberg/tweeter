@@ -34,14 +34,7 @@ const Login = (props: Props) => {
 
   const listener: LoginView = {
     setIsLoading: setIsLoading,
-    updateUserInfo: (
-      user: User,
-      displayedUser: User,
-      authToken: AuthToken,
-      rememberMe: boolean
-    ) => {
-      updateUserInfo(user, displayedUser, authToken, rememberMe);
-    },
+    updateUserInfo: updateUserInfo,
     displayErrorMessage: displayErrorMessage,
     navigate: navigate,
   };
