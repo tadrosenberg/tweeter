@@ -28,16 +28,15 @@ const Register = () => {
   const { updateUserInfo } = useInfoHook();
   const { displayErrorMessage } = useToastListener();
 
-  const checkSubmitButtonStatus = (): boolean => {
-    return (
-      !firstName ||
-      !lastName ||
-      !alias ||
-      !password ||
-      !imageUrl ||
-      !imageFileExtension
+  const checkSubmitButtonStatus = (): boolean =>
+    presenter.checkSubmitButtonStatus(
+      firstName,
+      lastName,
+      alias,
+      password,
+      imageUrl,
+      imageFileExtension
     );
-  };
 
   const registerOnEnter = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key == "Enter" && !checkSubmitButtonStatus()) {

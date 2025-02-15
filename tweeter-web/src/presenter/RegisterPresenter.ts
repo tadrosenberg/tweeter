@@ -22,6 +22,24 @@ export class RegisterPresenter {
     this.userService = new UserService();
   }
 
+  public checkSubmitButtonStatus(
+    firstName: string,
+    lastName: string,
+    alias: string,
+    password: string,
+    imageUrl: string,
+    imageFileExtension: string
+  ): boolean {
+    return (
+      !firstName ||
+      !lastName ||
+      !alias ||
+      !password ||
+      !imageUrl ||
+      !imageFileExtension
+    );
+  }
+
   public async doRegister(
     firstName: string,
     lastName: string,
