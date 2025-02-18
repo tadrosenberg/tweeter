@@ -2,9 +2,9 @@ import { AuthToken, User } from "tweeter-shared";
 import useInfoHook from "./UserInfoHook";
 import useToastListener from "../toaster/ToastListenerHook";
 import {
-  NavigationPresenter,
-  NavigationView,
-} from "../../presenter/NavigationPresenter";
+  UserNavigationPresenter,
+  UserNavigationView,
+} from "../../presenter/UserNavigationPresenter";
 
 interface NavigationHook {
   navigateToUser: (event: React.MouseEvent) => Promise<void>;
@@ -16,14 +16,14 @@ const useNavigationHook = (): NavigationHook => {
   const { displayErrorMessage } = useToastListener();
   const { setDisplayedUser, currentUser, authToken } = useInfoHook();
 
-  const listener: NavigationView = {
+  const listener: UserNavigationView = {
     setDisplayedUser: setDisplayedUser,
     getCurrentUser: () => currentUser,
     getAuthToken: () => authToken,
     displayErrorMessage,
   };
 
-  const presenter = new NavigationPresenter(listener);
+  const presenter = new UserNavigationPresenter(listener);
 
   return {
     navigateToUser: presenter.navigateToUser.bind(presenter),
