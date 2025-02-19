@@ -48,6 +48,7 @@ const Register = () => {
     handleImageFile(file);
   };
 
+  //pull this out into presenter
   const handleImageFile = (file: File | undefined) => {
     if (file) {
       setImageUrl(URL.createObjectURL(file));
@@ -91,7 +92,7 @@ const Register = () => {
     navigate: navigate,
   };
 
-  const presenter = new RegisterPresenter(listener);
+  const [presenter] = useState(new RegisterPresenter(listener));
 
   const doRegister = async () => {
     presenter.doRegister(
