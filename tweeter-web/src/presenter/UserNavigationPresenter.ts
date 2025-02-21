@@ -1,19 +1,18 @@
 import { AuthToken, User } from "tweeter-shared";
 import { UserService } from "../model/service/UserService";
+import { Presenter, View } from "./Presenter";
 
-export interface UserNavigationView {
+export interface UserNavigationView extends View {
   setDisplayedUser: (user: User) => void;
   getCurrentUser: () => User | null;
   getAuthToken: () => AuthToken | null;
-  displayErrorMessage: (message: string) => void;
 }
 
-export class UserNavigationPresenter {
-  private _view: UserNavigationView;
+export class UserNavigationPresenter extends Presenter<UserNavigationView> {
   private userService: UserService;
 
   public constructor(view: UserNavigationView) {
-    this._view = view;
+    super(view);
     this.userService = new UserService();
   }
 
@@ -24,19 +23,19 @@ export class UserNavigationPresenter {
       const alias = this.extractAlias(event.target.toString());
 
       const user = await this.userService.getUser(
-        this._view.getAuthToken()!,
+        this.view.getAuthToken()!,
         alias
       );
 
       if (!!user) {
-        if (this._view.getCurrentUser()?.equals(user)) {
-          this._view.setDisplayedUser(this._view.getCurrentUser()!);
+        if (this.view.getCurrentUser()?.equals(user)) {
+          this.view.setDisplayedUser(this.view.getCurrentUser()!);
         } else {
-          this._view.setDisplayedUser(user);
+          this.view.setDisplayedUser(user);
         }
       }
     } catch (error) {
-      this._view.displayErrorMessage(`Failed to get user: ${error}`);
+      this.view.displayErrorMessage(`Failed to get user: ${error}`);
     }
   }
 
