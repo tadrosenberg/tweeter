@@ -18,8 +18,7 @@ export class UserNavigationPresenter extends Presenter<UserNavigationView> {
 
   public async navigateToUser(event: React.MouseEvent): Promise<void> {
     event.preventDefault();
-
-    try {
+    this.doFailureReportingOperation(async () => {
       const alias = this.extractAlias(event.target.toString());
 
       const user = await this.userService.getUser(
@@ -34,9 +33,7 @@ export class UserNavigationPresenter extends Presenter<UserNavigationView> {
           this.view.setDisplayedUser(user);
         }
       }
-    } catch (error) {
-      this.view.displayErrorMessage(`Failed to get user: ${error}`);
-    }
+    }, "navigate to user");
   }
 
   public extractAlias(value: string): string {

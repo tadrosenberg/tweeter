@@ -27,9 +27,9 @@ export class LoginPresenter extends Presenter<LoginView> {
     rememberMe: boolean,
     originalUrl: string
   ) {
-    try {
-      this.view.setIsLoading(true);
+    this.view.setIsLoading(true);
 
+    await this.doFailureReportingOperation(async () => {
       const [user, authToken] = await this.userService.login(alias, password);
 
       this.view.updateUserInfo(user, user, authToken, rememberMe);
@@ -39,13 +39,9 @@ export class LoginPresenter extends Presenter<LoginView> {
       } else {
         this.view.navigate("/");
       }
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to log user in because of exception: ${error}`
-      );
-    } finally {
-      this.view.setIsLoading(false);
-    }
+    }, "log user in");
+
+    this.view.setIsLoading(false);
   }
 
   public checkSubmitButtonStatus(alias: string, password: string): boolean {
