@@ -7,10 +7,8 @@ import { Buffer } from "buffer";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationFields from "../AuthenticationFields";
 import useInfoHook from "../../userInfo/UserInfoHook";
-import {
-  RegisterPresenter,
-  RegisterView,
-} from "../../../presenter/RegisterPresenter";
+import { RegisterPresenter } from "../../../presenter/RegisterPresenter";
+import { AuthView } from "../../../presenter/Presenter";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -85,7 +83,7 @@ const Register = () => {
     return file.name.split(".").pop();
   };
 
-  const listener: RegisterView = {
+  const listener: AuthView = {
     setIsLoading: setIsLoading,
     updateUserInfo: updateUserInfo,
     displayErrorMessage: displayErrorMessage,

@@ -5,7 +5,6 @@ import { FollowService } from "../model/service/FollowService";
 
 export interface UserItemView extends View {
   addItems: (newItems: User[]) => void;
-  displayErrorMessage: (message: string) => void;
 }
 
 export abstract class UserItemPresenter extends PagedItemPresenter<

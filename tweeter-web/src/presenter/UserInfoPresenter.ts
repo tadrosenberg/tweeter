@@ -1,7 +1,6 @@
 import { AuthToken, User } from "tweeter-shared";
 import { FollowService } from "../model/service/FollowService";
 import { MessageView, Presenter } from "./Presenter";
-import UserInfo from "../components/userInfo/UserInfo";
 
 export interface UserInfoView extends MessageView {
   setIsFollower: (isFollower: boolean) => void;
