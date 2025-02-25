@@ -1,8 +1,8 @@
-import { AuthToken, User } from "tweeter-shared";
 import { UserService } from "../model/service/UserService";
-import { AuthView, Presenter, View } from "./Presenter";
+import { AuthPresenter } from "./AuthPresenter";
+import { AuthView } from "./Presenter";
 
-export class LoginPresenter extends Presenter<AuthView> {
+export class LoginPresenter extends AuthPresenter<AuthView> {
   private userService: UserService;
 
   public constructor(view: AuthView) {
@@ -16,21 +16,12 @@ export class LoginPresenter extends Presenter<AuthView> {
     rememberMe: boolean,
     originalUrl: string
   ) {
-    this.view.setIsLoading(true);
-
-    await this.doFailureReportingOperation(async () => {
-      const [user, authToken] = await this.userService.login(alias, password);
-
-      this.view.updateUserInfo(user, user, authToken, rememberMe);
-
-      if (!!originalUrl) {
-        this.view.navigate(originalUrl);
-      } else {
-        this.view.navigate("/");
-      }
-    }, "log user in");
-
-    this.view.setIsLoading(false);
+    await this.executeUserAction(
+      () => this.userService.login(alias, password),
+      rememberMe,
+      originalUrl,
+      "log user in"
+    );
   }
 
   public checkSubmitButtonStatus(alias: string, password: string): boolean {

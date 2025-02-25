@@ -1,7 +1,8 @@
 import { UserService } from "../model/service/UserService";
-import { AuthView, Presenter, View } from "./Presenter";
+import { AuthPresenter } from "./AuthPresenter";
+import { AuthView } from "./Presenter";
 
-export class RegisterPresenter extends Presenter<AuthView> {
+export class RegisterPresenter extends AuthPresenter<AuthView> {
   private userService: UserService;
 
   public constructor(view: AuthView) {
@@ -36,22 +37,18 @@ export class RegisterPresenter extends Presenter<AuthView> {
     imageFileExtension: string,
     rememberMe: boolean
   ) {
-    this.view.setIsLoading(true);
-
-    await this.doFailureReportingOperation(async () => {
-      const [user, authToken] = await this.userService.register(
-        firstName,
-        lastName,
-        alias,
-        password,
-        imageBytes,
-        imageFileExtension
-      );
-
-      this.view.updateUserInfo(user, user, authToken, rememberMe);
-      this.view.navigate("/");
-    }, "register user");
-
-    this.view.setIsLoading(false);
+    await this.executeUserAction(
+      () =>
+        this.userService.register(
+          firstName,
+          lastName,
+          alias,
+          password,
+          imageBytes,
+          imageFileExtension
+        ),
+      rememberMe,
+      "register user"
+    );
   }
 }
