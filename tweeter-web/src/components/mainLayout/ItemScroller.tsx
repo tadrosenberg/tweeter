@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import useToastListener from "../toaster/ToastListenerHook";
-import StatusItem from "../statusItem/StatusItem";
 import useInfoHook from "../userInfo/UserInfoHook";
 import {
   PagedItemPresenter,
