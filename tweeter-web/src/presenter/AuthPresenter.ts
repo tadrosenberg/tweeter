@@ -1,7 +1,7 @@
 import { AuthToken, User } from "tweeter-shared";
 import { AuthView, Presenter } from "./Presenter";
 
-export class AuthPresenter<V extends AuthView> extends Presenter<V> {
+export abstract class AuthPresenter<V extends AuthView> extends Presenter<V> {
   public async executeUserAction(
     action: () => Promise<[User, AuthToken]>,
     rememberMe: boolean,
@@ -18,4 +18,6 @@ export class AuthPresenter<V extends AuthView> extends Presenter<V> {
 
     this.view.setIsLoading(false);
   }
+
+  protected abstract checkSubmitButtonStatus(...args: any[]): boolean;
 }
