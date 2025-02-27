@@ -3,7 +3,15 @@ import {
   AppNavbarPresenter,
   AppNavbarView,
 } from "../../src/presenter/AppNavbarPresenter";
-import { instance, mock, spy, verify, when } from "@typestrong/ts-mockito";
+import {
+  anything,
+  capture,
+  instance,
+  mock,
+  spy,
+  verify,
+  when,
+} from "@typestrong/ts-mockito";
 import { UserService } from "../../src/model/service/UserService";
 
 describe("AppNavbarPresenter", () => {
@@ -36,5 +44,33 @@ describe("AppNavbarPresenter", () => {
   it("calls login on the user service with the correct auth token", async () => {
     await appNavbarPresenter.logOut(authToken);
     verify(mockUserService.logout(authToken)).once();
+  });
+
+  it("tells the view to clear the last info message, clear user info, and navigate to login page", async () => {
+    await appNavbarPresenter.logOut(authToken);
+    verify(mockAppNavbarView.clearLastInfoMessage()).once();
+    verify(mockAppNavbarView.clearUserInfo()).once();
+    verify(mockAppNavbarView.displayErrorMessage(anything())).never();
+  });
+
+  it("displays an error message and doesn't clear info message/user info/navigate to login", async () => {
+    const error = new Error("An error occured");
+    when(mockUserService.logout(authToken)).thenThrow(error);
+
+    await appNavbarPresenter.logOut(authToken);
+
+    let [capturedErrorMessage] = capture(
+      mockAppNavbarView.displayErrorMessage
+    ).last();
+    console.log(capturedErrorMessage);
+
+    verify(
+      mockAppNavbarView.displayErrorMessage(
+        "Failed to log user out because of exception: An error occured"
+      )
+    ).once();
+
+    verify(mockAppNavbarView.clearLastInfoMessage()).never();
+    verify(mockAppNavbarView.clearUserInfo()).never();
   });
 });
