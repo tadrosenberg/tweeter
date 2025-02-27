@@ -29,11 +29,13 @@ describe("PostStatus", () => {
       authToken: mockAuthTokenInstance,
     });
   });
+
   it("When first rendered the Post Status and Clear buttons are both disabled", () => {
     const { postStatusButton, clearButton } = renderPostStatusAndGetElements();
     expect(postStatusButton).toBeDisabled();
     expect(clearButton).toBeDisabled();
   });
+
   it("Both buttons are enabled when the text field has text", async () => {
     const { postStatusButton, clearButton, postStatusTextArea, user } =
       renderPostStatusAndGetElements();
@@ -41,6 +43,7 @@ describe("PostStatus", () => {
     expect(postStatusButton).toBeEnabled();
     expect(clearButton).toBeEnabled();
   });
+
   it("Both buttons are disabled when the text field is cleared", async () => {
     const { postStatusButton, clearButton, postStatusTextArea, user } =
       renderPostStatusAndGetElements();
@@ -49,6 +52,7 @@ describe("PostStatus", () => {
     expect(postStatusButton).toBeDisabled();
     expect(clearButton).toBeDisabled();
   });
+
   it("presenter's postStatus method is called with correct parameters when the Post Status button is pressed", async () => {
     const mockPresenter = mock<PostStatusPresenter>();
     const mockPresenterInstance = instance(mockPresenter);
