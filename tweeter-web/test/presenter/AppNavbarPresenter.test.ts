@@ -53,7 +53,7 @@ describe("AppNavbarPresenter", () => {
     verify(mockAppNavbarView.displayErrorMessage(anything())).never();
   });
 
-  it("displays an error message and doesn't clear info message/user info/navigate to login", async () => {
+  it("displays an error message and doesn't clear info message/user info", async () => {
     const error = new Error("An error occured");
     when(mockUserService.logout(authToken)).thenThrow(error);
 
