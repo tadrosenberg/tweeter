@@ -4,7 +4,6 @@ import { MessageView, Presenter } from "./Presenter";
 
 export interface AppNavbarView extends MessageView {
   clearUserInfo: () => void;
-  getAuthToken: () => AuthToken | null;
 }
 
 export class AppNavbarPresenter extends Presenter<AppNavbarView> {
@@ -15,10 +14,14 @@ export class AppNavbarPresenter extends Presenter<AppNavbarView> {
     this.service = new UserService();
   }
 
-  public async logOut() {
+  public get userService(): UserService {
+    return this.service;
+  }
+
+  public async logOut(authToken: AuthToken) {
     this.view.displayInfoMessage("Logging Out...", 0);
     this.doFailureReportingOperation(async () => {
-      await this.service.logout(this.view.getAuthToken()!);
+      await this.userService.logout(authToken);
 
       this.view.clearLastInfoMessage();
       this.view.clearUserInfo();

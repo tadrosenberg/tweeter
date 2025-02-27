@@ -7,7 +7,7 @@ import useInfoHook from "../userInfo/UserInfoHook";
 import {
   AppNavbarPresenter,
   AppNavbarView,
-} from "../../presenter/LogoutPresenter";
+} from "../../presenter/AppNavbarPresenter";
 
 const AppNavbar = () => {
   const location = useLocation();
@@ -20,13 +20,16 @@ const AppNavbar = () => {
     clearLastInfoMessage: clearLastInfoMessage,
     clearUserInfo: clearUserInfo,
     displayErrorMessage: displayErrorMessage,
-    getAuthToken: () => authToken,
   };
 
   const presenter = new AppNavbarPresenter(listener);
 
   const logOut = async () => {
-    await presenter.logOut();
+    if (authToken) {
+      await presenter.logOut(authToken);
+    } else {
+      displayErrorMessage("Auth token is missing.");
+    }
   };
 
   return (
