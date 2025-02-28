@@ -17,10 +17,10 @@ jest.mock("../../../src/components/userInfo/UserInfoHook", () => ({
 describe("PostStatus", () => {
   beforeAll(() => {
     const mockUserInstance = new User(
-      "Jane",
-      "Doe",
-      "@janedoe",
-      "someImageUrl"
+      "firstName",
+      "lastName",
+      "alias",
+      "imageUrl"
     );
     const mockAuthTokenInstance = new AuthToken("mockTokenValue", Date.now());
 

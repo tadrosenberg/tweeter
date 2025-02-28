@@ -59,11 +59,6 @@ describe("AppNavbarPresenter", () => {
 
     await appNavbarPresenter.logOut(authToken);
 
-    let [capturedErrorMessage] = capture(
-      mockAppNavbarView.displayErrorMessage
-    ).last();
-    console.log(capturedErrorMessage);
-
     verify(
       mockAppNavbarView.displayErrorMessage(
         "Failed to log user out because of exception: An error occured"
