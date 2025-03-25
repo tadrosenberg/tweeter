@@ -2,5 +2,6 @@ BUCKET='tads-tweeter'
 LAMBDA_ROLE='arn:aws:iam::293404919967:role/tweeter'
 EDIT_LAMBDALIST='
 tweeterGetFollowees | lambda/follow/GetFolloweesLambda.handler
+tweeterGetFollowers | lambda/follow/GetFollowersLambda.handler
 '
 LAMBDALAYER_ARN='arn:aws:lambda:us-east-1:293404919967:layer:tweeterLambdaLayer:2'
