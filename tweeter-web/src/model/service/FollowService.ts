@@ -84,7 +84,11 @@ export class FollowService {
     user: User
   ): Promise<number> => {
     // TODO: Replace with the result of calling server
-    return FakeData.instance.getFolloweeCount(user.alias);
+    const request: UserCountRequest = {
+      token: authToken.token,
+      user: user.dto,
+    };
+    return await this.serverFacade.getFolloweeCount(request);
   };
 
   getFollowerCount = async (
