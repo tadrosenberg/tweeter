@@ -2,6 +2,8 @@ import {
   PagedUserItemRequest,
   PagedUserItemResponse,
   User,
+  UserCountRequest,
+  UserCountResponse,
   UserDto,
 } from "tweeter-shared";
 import { ClientCommunicator } from "./ClientCommunicator";
@@ -60,6 +62,20 @@ export class ServerFacade {
       } else {
         return [items, response.hasMore];
       }
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? undefined);
+    }
+  }
+
+  public async getFollowerCount(request: UserCountRequest): Promise<number> {
+    const response = await this.clientCommunicator.doPost<
+      UserCountRequest,
+      UserCountResponse
+    >(request, "/follower/count");
+
+    if (response.success) {
+      return response.count;
     } else {
       console.error(response);
       throw new Error(response.message ?? undefined);
