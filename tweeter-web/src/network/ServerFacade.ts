@@ -1,4 +1,6 @@
 import {
+  FollowStatusRequest,
+  FollowStatusResponse,
   PagedUserItemRequest,
   PagedUserItemResponse,
   User,
@@ -90,6 +92,22 @@ export class ServerFacade {
 
     if (response.success) {
       return response.count;
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? undefined);
+    }
+  }
+
+  public async getIsFollowerStatus(
+    request: FollowStatusRequest
+  ): Promise<boolean> {
+    const response = await this.clientCommunicator.doPost<
+      FollowStatusRequest,
+      FollowStatusResponse
+    >(request, "/follower/status");
+
+    if (response.success) {
+      return response.status;
     } else {
       console.error(response);
       throw new Error(response.message ?? undefined);
