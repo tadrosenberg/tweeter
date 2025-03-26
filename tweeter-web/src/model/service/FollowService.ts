@@ -1,6 +1,5 @@
 import {
   AuthToken,
-  FakeData,
   FollowRequest,
   PagedUserItemRequest,
   User,
