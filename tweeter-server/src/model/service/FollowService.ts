@@ -74,9 +74,9 @@ export class FollowService {
   };
 
   getIsFollowerStatus = async (
-    authToken: AuthToken,
-    user: User,
-    selectedUser: User
+    token: string,
+    user: UserDto,
+    selectedUser: UserDto
   ): Promise<boolean> => {
     // TODO: Replace with the result of calling server
     return FakeData.instance.isFollower();
