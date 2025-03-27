@@ -33,6 +33,10 @@ export class AuthToken {
     this._timestamp = timestamp;
   }
 
+  public static fromString(token: string): AuthToken {
+    return new AuthToken(token, Date.now());
+  }
+
   public get token(): string {
     return this._token;
   }
