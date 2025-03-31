@@ -1,7 +1,16 @@
-import { Buffer } from "buffer";
 import { AuthToken, FakeData, User, UserDto } from "tweeter-shared";
+import { IUserDao } from "../../dao/interfaces/IUserDao";
+import { ISessionDao } from "../../dao/interfaces/ISessionDao";
 
 export class UserService {
+  private userDao: IUserDao;
+  private sessionDao: ISessionDao;
+
+  constructor(userDao: IUserDao, sessionDao: ISessionDao) {
+    this.userDao = userDao;
+    this.sessionDao = sessionDao;
+  }
+
   login = async (
     alias: string,
     password: string
@@ -24,9 +33,8 @@ export class UserService {
     userImageBytes: string,
     imageFileExtension: string
   ): Promise<[UserDto, string]> => {
-    // Not neded now, but will be needed when you make the request to the server in milestone 3
-
-    // TODO: Replace with the result of calling the server
+    //create a new user
+    //get
     const user = FakeData.instance.firstUser;
 
     if (user === null) {
