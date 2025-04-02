@@ -1,8 +1,8 @@
 export interface IImageDao {
   uploadProfileImage(
     userAlias: string,
-    imageBuffer: Buffer,
-    fileType: string
+    imageStringBase64Encoded: string,
+    imageFileExtension: string
   ): Promise<string>;
   getImageUrl(userAlias: string): Promise<string>;
 }

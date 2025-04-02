@@ -4,8 +4,8 @@ import { IStatusDao } from "./IStatusDao";
 import { IUserDao } from "./IUserDao";
 
 export interface IDaoFactory {
-  createUserDAO(): IUserDao;
-  createFollowDAO(): IFollowDao;
-  createStatusDAO(): IStatusDao;
-  createImageDAO(): IImageDao;
+  createUserDao(): IUserDao;
+  createFollowDao(): IFollowDao;
+  createStatusDao(): IStatusDao;
+  createImageDao(): IImageDao;
 }

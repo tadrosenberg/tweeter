@@ -5,15 +5,13 @@ import { DynamoDaoFactory } from "../../dao/dynamo/DynamoDaoFactory";
 export const handler = async (
   request: GetUserRequest
 ): Promise<GetUserResponse> => {
-  // Create the concrete factory instance
   const daoFactory = new DynamoDaoFactory();
 
-  // Use the factory to create DAO instances
   const userDao = daoFactory.createUserDao();
   const sessionDao = daoFactory.createSessionDao();
+  const imageDao = daoFactory.createImageDao();
 
-  // Inject the DAOs into the UserService
-  const userService = new UserService(userDao, sessionDao);
+  const userService = new UserService(userDao, sessionDao, imageDao);
   const user = await userService.getUser(request.token, request.alias);
   return {
     success: true,
