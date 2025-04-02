@@ -26,14 +26,14 @@ export class DynamoUserDao implements IUserDao {
     const result = await docClient.send(new GetCommand(getParams));
 
     if (!result.Item) {
-      throw new Error("User not found");
+      throw new Error("[Bad Request] Username or password is incorrect");
     }
 
     const user = result.Item as UserRecord;
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
-      throw new Error("Invalid password");
+      throw new Error("[Bad Request] Invalid password");
     }
 
     const { passwordHash, ...sanitizedUser } = user;

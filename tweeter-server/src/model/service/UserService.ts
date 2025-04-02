@@ -38,7 +38,10 @@ export class UserService {
     userImageBytes: string,
     imageFileExtension: string
   ): Promise<[UserDto, string]> => {
-    //add the image and return the url
+    if ((await this.userDao.getUser(alias)) !== null) {
+      throw new Error("[Bad Request] User already exists");
+    }
+
     const imageUrl = await this.imageDao.uploadProfileImage(
       alias,
       userImageBytes,
@@ -71,12 +74,16 @@ export class UserService {
   };
 
   getUser = async (token: string, alias: string): Promise<UserDto | null> => {
-    //check authToken
-    return this.userDao.getUser(alias) ?? null;
+    const isValid = await this.sessionDao.getAuthToken(token);
+    if (!isValid) {
+      console.warn("[Bad Request] Invalid token");
+      return null;
+    }
+    return (await this.userDao.getUser(alias)) ?? null;
   };
 
   logout = async (token: string): Promise<void> => {
-    // Pause so we can see the logging out message. Delete when the call to the server is implemented.
-    await new Promise((res) => setTimeout(res, 1000));
+    await this.sessionDao.deleteAuthToken(token);
+    console.log("[logout] Token deleted successfully");
   };
 }

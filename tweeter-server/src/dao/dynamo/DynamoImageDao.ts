@@ -39,7 +39,7 @@ export class DynamoImageDao implements IImageDao {
 
     try {
       await client.send(command);
-      return `https://${BUCKET}.s3.${REGION}.amazonaws.com/image/${fileName}`;
+      return `https://${BUCKET}.s3.${REGION}.amazonaws.com/images/${fileName}`;
     } catch (error) {
       throw new Error("s3 put image failed with: " + error);
     }

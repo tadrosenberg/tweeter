@@ -14,7 +14,6 @@ zip -r ../dist.zip .
 cd ..
 
 # Move the dist.zip file to the tweeter-server folder
-mv dist.zip tweeter-server/
 
 # Run the uploadLambdas script
 ./uploadLambdas.sh
