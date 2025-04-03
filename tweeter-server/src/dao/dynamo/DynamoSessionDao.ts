@@ -73,4 +73,30 @@ export class DynamoSessionDao implements ISessionDao {
       throw error;
     }
   }
+
+  async getUserfromToken(token: string): Promise<string> {
+    const getParams = {
+      TableName: TABLE_NAME,
+      Key: { token },
+    };
+
+    try {
+      const result = await docClient.send(new GetCommand(getParams));
+      console.log("[getUserfromToken] GetCommand result:", result);
+
+      if (result.Item) {
+        const record = result.Item as { userAlias: string };
+        if (record.userAlias) {
+          return record.userAlias;
+        } else {
+          throw new Error("Token found but no userAlias field exists");
+        }
+      } else {
+        throw new Error("Token not found");
+      }
+    } catch (error) {
+      console.error("[getUserfromToken] Error:", error);
+      throw error;
+    }
+  }
 }

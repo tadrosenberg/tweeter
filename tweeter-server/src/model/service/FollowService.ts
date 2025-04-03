@@ -1,14 +1,45 @@
-import { AuthToken, FakeData, User, UserDto } from "tweeter-shared";
+import { User, UserDto } from "tweeter-shared";
+import { IUserDao } from "../../dao/interfaces/IUserDao";
+import { ISessionDao } from "../../dao/interfaces/ISessionDao";
+import { IFollowDao } from "../../dao/interfaces/IFollowDao";
 
 export class FollowService {
+  private userDao: IUserDao;
+  private sessionDao: ISessionDao;
+  private followDao: IFollowDao;
+
+  constructor(
+    userDao: IUserDao,
+    sessionDao: ISessionDao,
+    followDao: IFollowDao
+  ) {
+    this.userDao = userDao;
+    this.sessionDao = sessionDao;
+    this.followDao = followDao;
+  }
   public async loadMoreFollowers(
     token: string,
     userAlias: string,
     pageSize: number,
     lastItem: UserDto | null
   ): Promise<[UserDto[], boolean]> {
-    // TODO: Replace with the result of calling server
-    return this.getFakePage(lastItem, pageSize, userAlias);
+    if ((await this.sessionDao.getAuthToken(token)) === false) {
+      throw new Error("[Bad Request] Invalid token");
+    }
+    const [items, hasMore] = await this.followDao.getPageOfFollowers(
+      userAlias,
+      pageSize,
+      User.fromDto(lastItem)
+    );
+    const userPromises = items.map((userAlias) =>
+      this.userDao.getUser(userAlias)
+    );
+    const userDtosOrNull = await Promise.all(userPromises);
+    const userDtos = userDtosOrNull.filter(
+      (dto): dto is UserDto => dto !== null
+    );
+
+    return [userDtos, hasMore];
   }
 
   public async loadMoreFollowees(
@@ -17,18 +48,35 @@ export class FollowService {
     pageSize: number,
     lastItem: UserDto | null
   ): Promise<[UserDto[], boolean]> {
-    // TODO: Replace with the result of calling server
-    return this.getFakePage(lastItem, pageSize, userAlias);
+    if ((await this.sessionDao.getAuthToken(token)) === false) {
+      throw new Error("[Bad Request] Invalid token");
+    }
+    const [items, hasMore] = await this.followDao.getPageOfFollowees(
+      userAlias,
+      pageSize,
+      User.fromDto(lastItem)
+    );
+    const userPromises = items.map((userAlias) =>
+      this.userDao.getUser(userAlias)
+    );
+    const userDtosOrNull = await Promise.all(userPromises);
+    const userDtos = userDtosOrNull.filter(
+      (dto): dto is UserDto => dto !== null
+    );
+
+    return [userDtos, hasMore];
   }
 
   follow = async (
     token: string,
     userToFollow: UserDto
   ): Promise<[followerCount: number, followeeCount: number]> => {
-    // Pause so we can see the follow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
+    const currentUser = await this.sessionDao.getUserfromToken(token);
+    if (currentUser === null) {
+      throw new Error("[Bad Request] User not found");
+    }
 
-    // TODO: Call the server
+    await this.followDao.follow(currentUser, userToFollow.alias);
 
     const followerCount = await this.getFollowerCount(token, userToFollow);
     const followeeCount = await this.getFolloweeCount(token, userToFollow);
@@ -40,10 +88,12 @@ export class FollowService {
     token: string,
     userToUnfollow: UserDto
   ): Promise<[followerCount: number, followeeCount: number]> => {
-    // Pause so we can see the unfollow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
+    const currentUser = await this.sessionDao.getUserfromToken(token);
+    if (currentUser === null) {
+      throw new Error("[Bad Request] User not found");
+    }
 
-    // TODO: Call the server
+    await this.followDao.unfollow(currentUser, userToUnfollow.alias);
 
     const followerCount = await this.getFollowerCount(token, userToUnfollow);
     const followeeCount = await this.getFolloweeCount(token, userToUnfollow);
@@ -52,13 +102,17 @@ export class FollowService {
   };
 
   getFolloweeCount = async (token: string, user: UserDto): Promise<number> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getFolloweeCount(user.alias);
+    if ((await this.sessionDao.getAuthToken(token)) === false) {
+      throw new Error("[Bad Request] Invalid token");
+    }
+    return await this.followDao.getFolloweeCount(user.alias);
   };
 
   getFollowerCount = async (token: string, user: UserDto): Promise<number> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getFollowerCount(user.alias);
+    if ((await this.sessionDao.getAuthToken(token)) === false) {
+      throw new Error("[Bad Request] Invalid token");
+    }
+    return this.followDao.getFollowerCount(user.alias);
   };
 
   getIsFollowerStatus = async (
@@ -66,21 +120,9 @@ export class FollowService {
     user: UserDto,
     selectedUser: UserDto
   ): Promise<boolean> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.isFollower();
+    if ((await this.sessionDao.getAuthToken(token)) === false) {
+      throw new Error("[Bad Request] Invalid token");
+    }
+    return await this.followDao.getFollowStatus(user.alias, selectedUser.alias);
   };
-
-  private async getFakePage(
-    lastItem: UserDto | null,
-    pageSize: number,
-    userAlias: string
-  ): Promise<[UserDto[], boolean]> {
-    const [items, hasMore] = FakeData.instance.getPageOfUsers(
-      User.fromDto(lastItem),
-      pageSize,
-      userAlias
-    );
-    const dtos = items.map((user) => user.dto);
-    return [dtos, hasMore];
-  }
 }

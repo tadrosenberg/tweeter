@@ -75,10 +75,6 @@ export class UserService {
 
   getUser = async (token: string, alias: string): Promise<UserDto | null> => {
     const isValid = await this.sessionDao.getAuthToken(token);
-    if (!isValid) {
-      console.warn("[Bad Request] Invalid token");
-      return null;
-    }
     return (await this.userDao.getUser(alias)) ?? null;
   };
 

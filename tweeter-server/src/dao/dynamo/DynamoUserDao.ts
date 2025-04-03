@@ -41,11 +41,14 @@ export class DynamoUserDao implements IUserDao {
   }
 
   async getUser(alias: string): Promise<UserDto | null> {
+    console.log(`[getUser] Looking for alias: ${alias}`);
+
     const getParams = {
       TableName: TABLE_NAME,
-      Key: { alias },
+      Key: { alias: alias },
     };
     const result = await docClient.send(new GetCommand(getParams));
+    console.log("[getUser] DynamoDB returned:", result);
 
     if (!result.Item) {
       return null;

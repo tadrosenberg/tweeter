@@ -291,7 +291,7 @@ export class ServerFacade {
     // Handle errors
     if (response.success) {
       if (user == null) {
-        throw new Error(`Failed creation of user`);
+        throw new Error(`[Bad Request] Failed creation of user`);
       } else {
         return [user, authToken];
       }

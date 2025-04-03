@@ -2,16 +2,18 @@ import { StatusDto } from "tweeter-shared";
 
 export interface IStatusDao {
   getPageOfStories(
-    token: string,
     userAlias: string,
     pageSize: number,
-    lastItem: StatusDto | null
+    lastTimestamp?: number
   ): Promise<[StatusDto[], boolean]>;
   getPageOfFeeds(
-    token: string,
     userAlias: string,
     pageSize: number,
-    lastItem: StatusDto | null
+    lastCompositeKey?: string
   ): Promise<[StatusDto[], boolean]>;
-  postStatus(token: string, newStatus: StatusDto): Promise<void>;
+  postStatus(newStatus: StatusDto): Promise<void>;
+  batchInsertFeedItems(
+    followers: string[],
+    newStatus: StatusDto
+  ): Promise<void>;
 }

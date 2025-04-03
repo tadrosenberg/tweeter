@@ -6,6 +6,7 @@ export interface ISessionDao {
   ): Promise<string>;
   getAuthToken(token: string): Promise<boolean>;
   deleteAuthToken(sessionId: string): Promise<void>;
+  getUserfromToken(token: string): Promise<string>;
 }
 
 export interface AuthRecord {

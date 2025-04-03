@@ -1,14 +1,61 @@
-import { AuthToken, FakeData, Status, StatusDto } from "tweeter-shared";
+import {
+  AuthToken,
+  FakeData,
+  Status,
+  StatusDto,
+  UserDto,
+} from "tweeter-shared";
+import { IUserDao } from "../../dao/interfaces/IUserDao";
+import { ISessionDao } from "../../dao/interfaces/ISessionDao";
+import { IFollowDao } from "../../dao/interfaces/IFollowDao";
+import { IStatusDao } from "../../dao/interfaces/IStatusDao";
 
 export class StatusService {
+  private userDao: IUserDao;
+  private sessionDao: ISessionDao;
+  private followDao: IFollowDao;
+  private statusDao: IStatusDao;
+
+  constructor(
+    userDao: IUserDao,
+    sessionDao: ISessionDao,
+    followDao: IFollowDao,
+    statusDao: IStatusDao
+  ) {
+    this.userDao = userDao;
+    this.sessionDao = sessionDao;
+    this.followDao = followDao;
+    this.statusDao = statusDao;
+  }
   loadMoreStoryItems = async (
     token: string,
     userAlias: string,
     pageSize: number,
     lastItem: StatusDto | null
   ): Promise<[StatusDto[], boolean]> => {
-    // TODO: Replace with the result of calling server
-    return this.getFakePage(lastItem, pageSize);
+    if ((await this.sessionDao.getAuthToken(token)) === false) {
+      throw new Error("[Bad Request] Invalid token");
+    }
+    const lastTimestamp = lastItem ? lastItem.timestamp : undefined;
+    const [partialStatuses, hasMore] = await this.statusDao.getPageOfStories(
+      userAlias,
+      pageSize,
+      lastTimestamp
+    );
+
+    const enrichedStatuses: StatusDto[] = await Promise.all(
+      partialStatuses.map(async (status) => {
+        const fullUser: UserDto | null = await this.userDao.getUser(
+          status.user.alias
+        );
+        return {
+          ...status,
+          user: fullUser || status.user,
+        };
+      })
+    );
+
+    return [enrichedStatuses, hasMore];
   };
 
   loadMoreFeedItems = async (
@@ -17,26 +64,50 @@ export class StatusService {
     pageSize: number,
     lastItem: StatusDto | null
   ): Promise<[StatusDto[], boolean]> => {
-    // TODO: Replace with the result of calling server
-    return this.getFakePage(lastItem, pageSize);
-  };
-
-  postStatus = async (token: string, newStatus: StatusDto): Promise<void> => {
-    // Pause so we can see the logging out message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
-
-    // TODO: Call the server to post the status
-  };
-
-  private async getFakePage(
-    lastItem: StatusDto | null,
-    pageSize: number
-  ): Promise<[StatusDto[], boolean]> {
-    const [items, hasMore] = FakeData.instance.getPageOfStatuses(
-      Status.fromDto(lastItem),
-      pageSize
+    if ((await this.sessionDao.getAuthToken(token)) === false) {
+      throw new Error("[Bad Request] Invalid token");
+    }
+    const lastCompositeKey = lastItem
+      ? `${lastItem.timestamp}#${lastItem.user.alias}`
+      : undefined;
+    const [partialStatuses, hasMore] = await this.statusDao.getPageOfFeeds(
+      userAlias,
+      pageSize,
+      lastCompositeKey
     );
-    const dtos = items.map((status) => status.dto);
-    return [dtos, hasMore];
+
+    const enrichedStatuses: StatusDto[] = await Promise.all(
+      partialStatuses.map(async (status) => {
+        const fullUser: UserDto | null = await this.userDao.getUser(
+          status.user.alias
+        );
+        return {
+          ...status,
+          user: fullUser || status.user,
+        };
+      })
+    );
+
+    return [enrichedStatuses, hasMore];
+  };
+
+  async postStatus(token: string, newStatus: StatusDto): Promise<void> {
+    if ((await this.sessionDao.getAuthToken(token)) === false) {
+      throw new Error("[Bad Request] Invalid token");
+    }
+
+    await this.statusDao.postStatus(newStatus);
+
+    const followers: string[] = await this.followDao.getFollowers(
+      newStatus.user.alias
+    );
+    console.log(
+      "[postStatus] Followers for user",
+      newStatus.user.alias,
+      ":",
+      followers
+    );
+
+    await this.statusDao.batchInsertFeedItems(followers, newStatus);
   }
 }
