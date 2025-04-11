@@ -9,12 +9,17 @@ import { IUserDao } from "../../dao/interfaces/IUserDao";
 import { ISessionDao } from "../../dao/interfaces/ISessionDao";
 import { IFollowDao } from "../../dao/interfaces/IFollowDao";
 import { IStatusDao } from "../../dao/interfaces/IStatusDao";
+import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
 
 export class StatusService {
   private userDao: IUserDao;
   private sessionDao: ISessionDao;
   private followDao: IFollowDao;
   private statusDao: IStatusDao;
+  private sqsClient = new SQSClient({ region: "us-east-1" });
+  private postStatusQueueUrl =
+    process.env.POST_STATUS_QUEUE_URL ||
+    "https://sqs.us-east-1.amazonaws.com/293404919967/PostStatusQueue";
 
   constructor(
     userDao: IUserDao,
@@ -98,16 +103,35 @@ export class StatusService {
 
     await this.statusDao.postStatus(newStatus);
 
-    const followers: string[] = await this.followDao.getFollowers(
-      newStatus.user.alias
-    );
-    console.log(
-      "[postStatus] Followers for user",
-      newStatus.user.alias,
-      ":",
-      followers
-    );
+    // const followers: string[] = await this.followDao.getFollowers(
+    //   newStatus.user.alias
+    // );
+    // console.log(
+    //   "[postStatus] Followers for user",
+    //   newStatus.user.alias,
+    //   ":",
+    //   followers
+    // );
 
-    await this.statusDao.batchInsertFeedItems(followers, newStatus);
+    // await this.statusDao.batchInsertFeedItems(followers, newStatus);
+
+    const message = {
+      userAlias: newStatus.user.alias,
+      timestamp: newStatus.timestamp,
+      post: newStatus.post,
+    };
+
+    const params = {
+      QueueUrl: this.postStatusQueueUrl,
+      MessageBody: JSON.stringify(message),
+    };
+
+    try {
+      await this.sqsClient.send(new SendMessageCommand(params));
+      console.log("[postStatus] SQS message sent:", message);
+    } catch (error) {
+      console.error("[postStatus] Error sending SQS message:", error);
+      throw error;
+    }
   }
 }

@@ -55,7 +55,7 @@ export class DynamoSessionDao implements ISessionDao {
       return true;
     } else {
       console.warn("[getAuthToken] Token has expired.");
-      // await this.deleteAuthToken(token);
+      await this.deleteAuthToken(token);
       return false;
     }
   }

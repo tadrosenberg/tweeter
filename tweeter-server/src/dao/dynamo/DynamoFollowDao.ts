@@ -23,7 +23,7 @@ export class DynamoFollowDao implements IFollowDao {
   ): Promise<[string[], boolean]> {
     const params: QueryCommandInput = {
       TableName: TABLE_NAME,
-      IndexName: "followeeAlias-index", // Make sure this GSI exists!
+      IndexName: "followeeAlias-index",
       KeyConditionExpression: "followeeAlias = :alias",
       ExpressionAttributeValues: {
         ":alias": userAlias,
